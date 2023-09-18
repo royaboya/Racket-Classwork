@@ -2,6 +2,7 @@
 ;; about the language level of this file in a form that our tools can easily process.
 #lang racket
 #reader(lib "htdp-beginner-reader.ss" "lang")((modname |hw0 (final version)|) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+
 ;;! Purpose: An introduction to programming with simple function definitions.
 
 ;;! Instructions:
