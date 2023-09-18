@@ -1,5 +1,6 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
+#lang racket
 #reader(lib "htdp-beginner-reader.ss" "lang")((modname lab0.rkt) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
 
 ;;! Instructions:
@@ -43,7 +44,7 @@
 
 
 (define HOUSE (overlay/offset (circle 10 "solid" "black") 30 -155 (overlay/align "middle" "bottom" (rectangle 100 150 "solid" "medium red") (above (triangle 250 "solid" "red")(square 250 "solid" "medium gray"))
-)))
+                                                                                 )))
 
 
 
