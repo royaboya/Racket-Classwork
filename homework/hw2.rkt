@@ -1,6 +1,4 @@
 #lang racket
-
-
 (require 2htdp/image)
 ;; Purpose: Recipe recipe practice, now with structured data.
 
@@ -36,14 +34,13 @@
 (define midnight (make-time 0 0 0))
 (define morning-hour (make-time 9 0 0))
 
-#|
-(define (time-template Time)
-  (cond
-    [(= Time-hours)...]
-    [(= Time-minutes)...]
-    [(= Time-seconds)...]
-    ))
-|#
+;;; (define (time-template Time)
+;;;   (cond
+;;;     [(= (time-hours Time))...]
+;;;     [(= (time-minutes Time))...]
+;;;     [(= (time-seconds Time))...]
+;;;     ))
+
 ;;! Part B
 ;; Design a function called tick that adds one second to a Time.
 
@@ -58,17 +55,10 @@
     
     ))
 
-
-;; TODO CHECK EXPEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEECTS
-(define reset-case (make-time 23 59 59))
-(define hour-case (make-time 3 59 59))
-(define minute-case (make-time 1 3 59))
-(define second-case (make-time 1 3 3))
-
-(tick reset-case)
-(tick hour-case)
-(tick minute-case)
-(tick second-case)
+;;; (check-expect(tick (make-time 23 59 59)) (make-time 0 0 0))
+;;; (check-expect(tick (make-time 3 59 59)) (make-time 4 0 0))
+;;; (check-expect(tick (make-time 1 3 59)) (make-time 1 4 0))
+;;; (check-expect(tick (make-time 1 3 3)) (make-time 1 3 4))
 
 ;;! Part C
 
@@ -81,13 +71,41 @@
 ;; Note: The hour hand does not need to base it's position on the minute hand
 ;; for this assignment
 
+
+(define h-hand (line 0 40 "black"))
+(define m-hand (line 0 90 "black"))
+(define s-hand (line 0 90 "red"))
+
 (define (time->image time)
-  (overlay (circle 5 "solid" "black")(circle 100 "outline" "black"))
+  (overlay/offset (rotate (- 360 (angle-MS (time-seconds time))) s-hand)
+                  (* (get-x (angle-MS (time-seconds time)) 45) -1) (get-y (angle-MS (time-seconds time)) 45)
   
-  )
+  (overlay/offset (rotate (- 360 (angle-MS (time-minutes time))) m-hand)
+                  (* (get-x (angle-MS (time-minutes time)) 45) -1) (get-y (angle-MS (time-minutes time)) 45)
+
+  (overlay/offset (rotate (- 360(angle-H (time-hours time))) h-hand)
+                  (* (get-x (angle-H (time-hours time)) 20)-1) (get-y (angle-H (time-hours time)) 20)
+                     (overlay (circle 5 "solid" "black")(circle 100 "outline" "black"))))))
+
+(define (get-y angle magnitude)
+  (* magnitude (cos (degrees->radians angle))
+  ))
+
+(define (get-x angle magnitude)
+  (* magnitude (sin (degrees->radians angle))
+  ))
+
+(define (degrees->radians deg) (/ deg 57.295779))
+
+;; angle-MS: Number -> Number
+(define (angle-MS t) (modulo(* 6 t) 360))
+
+;; angle-H: Number -> Number
+(define (angle-H t) (modulo (* 30 t) 720))
+
 
 ; TODO: DELETE LINE
-(time->image noon)
+(time->image (make-time 10 30 26))
 
 ;;! Problem 2
 
@@ -99,7 +117,7 @@
 ;; restaurant's name, its cuisine, the dish you ordered, its price, your
 ;; rating (1--5), and whether or not you saw any rats.
 
-(define-struct Review(name cuisine dish price rating has-rats))
+(define-struct Review (name cuisine dish price rating has-rats))
 ;; A Review is a (make-Review String String String Number Number Boolean)
 ;; name - Name of the restaurant
 ;; cuisine - The type of cuisine the restaurant serves
@@ -109,17 +127,10 @@
 ;; has-rats - Whether or not rats were seen at the restaurant
 ;; A review of a given restaurant
 
-;; TODOOOOOOOOOOO REFACTORRRRRRRRRR & FIX
-
 ;;; (define (Review-template Review)
-;;;   (cond
-;;;     [(string=? (Review-name Review))]
-;;;     [(string=? (Review-cuisine Review))]
-;;;     [(string=? (Review-dish Review))]
-;;;     [(= (Review-price Review))]
-;;;     [(= (Review-rating Review))]
-;;;     [(Review-has-rats Review)]
-;;;     ))
+;;;   (...(Review-name Review)...(Review-name Review)...(Review-cuisine Review)
+;;;       ...(Review-dish Review)...(Review-price Review)...(Review-rating Review)...(Review-has-rats Review))
+;;;   )
 
 ;;! Part B
 
@@ -133,9 +144,9 @@
                (Review-price Rev) new-rating (Review-has-rats Rev))
   )
 
-;;(check-expect (update-rating (make-Review "New China" "Chinese" "Crab" 14.99 3 #f) 4) (make-Review "New China" "Chinese" "Crab" 14.99 4 #f))
-;;(check-expect (update-rating (make-Review "Chipotle" "Mexican" "Rice Bowl" 10.50 4 #f) 3) (make-Review "Chipotle" "Mexican" "Rice Bowl" 10.50 3 #f))
-;;(check-expect (update-rating (make-Review "McDonalds" "American" "Big Mac" 5.50 3 #f) 2) (make-Review "McDonalds" "American" "Big Mac" 5.50 2 #f))
+;;; (check-expect (update-rating (make-Review "New China" "Chinese" "Crab" 14.99 3 #f) 4) (make-Review "New China" "Chinese" "Crab" 14.99 4 #f))
+;;; (check-expect (update-rating (make-Review "Chipotle" "Mexican" "Rice Bowl" 10.50 4 #f) 3) (make-Review "Chipotle" "Mexican" "Rice Bowl" 10.50 3 #f))
+;;; (check-expect (update-rating (make-Review "McDonalds" "American" "Big Mac" 5.50 3 #f) 2) (make-Review "McDonalds" "American" "Big Mac" 5.50 2 #f))
 
 ;;! Part C
 
@@ -158,9 +169,9 @@
                                  (Review-price Rev) (-(Review-rating Rev)1) #t )]
     ))
 
-;;(check-expect (rat-sighting (make-Review "r1" "chinese" "rice" 1.50 1 #f)) (make-Review "r1" "chinese" "rice" 1.50 1 #t))
-;;(check-expect (rat-sighting (make-Review "r2" "thai" "pho" 13 4 #f)) (make-Review "r2" "thai" "pho" 13 3 #t))
-;;(check-expect (rat-sighting (make-Review "r3" "indian" "naan" 2.50 3 #t)) (make-Review "r3" "indian" "naan" 2.50 3 #t))
+;;; (check-expect (rat-sighting (make-Review "r1" "chinese" "rice" 1.50 1 #f)) (make-Review "r1" "chinese" "rice" 1.50 1 #t))
+;;; (check-expect (rat-sighting (make-Review "r2" "thai" "pho" 13 4 #f)) (make-Review "r2" "thai" "pho" 13 3 #t))
+;;; (check-expect (rat-sighting (make-Review "r3" "indian" "naan" 2.50 3 #t)) (make-Review "r3" "indian" "naan" 2.50 3 #t))
 
 ;;! Problem 3
 
@@ -174,6 +185,23 @@
 ;; Design data definitions called PartType and Stock to represent
 ;; a single type of item in stock.
 
+;; A PartType is one of:
+;; "LIDAR sensor"
+;; "depth camera"
+;; "accelerometer"
+;; "electric motor"
+;; "battery"
+
+
+;; A Stock is a (make-Stock String Number Number)
+;; A part-type is a PartType
+;; price is the price of an individual PartType
+;; amount is the number of total items in stock
+
+(define-struct Stock (part-type price amount))
+
+;;; (define (Stock-template Stock)
+;;;   (...(Stock-price Stock)...(Stock-amount Stock)))
 
 ;;! Part B
 
@@ -181,6 +209,18 @@
 ;; value, and reduces the price by the given value. However, if the price
 ;; is lower than $10, do not apply the discount. You can assume that the
 ;; discount is less than the original price.
+
+;; discount: Stock Number
+;; Applies a discount to a stock only if the price is greater than or equal to $10
+(define (discount stock disc)
+  (if (< (Stock-price stock) 10) stock
+      (make-Stock (Stock-part-type stock) (-(Stock-price stock)disc) (Stock-amount stock))))
+
+
+
+;;; (check-expect (discount (make-Stock "depth camera" 8 6) 9) (make-Stock "depth camera" 8 6))
+;;; (check-expect (discount (make-Stock "LIDAR sensor" 111 9) 11) (make-Stock "LIDAR sensor" 100 9))
+;;; (check-expect (discount (make-Stock "battery" 30 45) 10) (make-Stock "battery" 20 45) )
 
 
 ;;! Part C
@@ -190,4 +230,21 @@
 ;; or equal to the value of the second.
 ;; Note: To receive full credit, you will need to write a helper function that
 ;; follows the template.
+
+;; greater-value?: Stock Stock -> Boolean
+;; Compares two stocks to see if the value of the first stock is greater
+;; than or equal to the value of the second inputted stock 
+(define (greater-value? s1 s2)
+  (>= (compute-stock-value s1) (compute-stock-value s2))
+  )
+
+;;; (check-expect(greater-value? (make-Stock "depth camera" 100 16) (make-Stock "LIDAR sensor" 100 10)) #t)
+;;; (check-expect(greater-value? (make-Stock "battery" 4 4) (make-Stock "accelerometer" 4 4)) #t)
+;;; (check-expect(greater-value? (make-Stock "electric motor" 9 3) (make-Stock "LIDAR sensor" 10 3)) #f)
+
+;; compute-stock-value: Stock -> Number
+;; Computes the total value of a stock by getting the product
+;; of the price and the total amount of items in stock
+(define (compute-stock-value s) (* (Stock-price s) (Stock-amount s)))
+
 
