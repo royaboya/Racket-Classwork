@@ -1,0 +1,64 @@
+tedious approach for time->image
+
+#|
+(define h-hand (line 0 40 "black"))
+(define m-hand (line 0 90 "black"))
+(define s-hand (line 0 90 "red"))
+
+(define (time->image time)
+  (overlay/offset (rotate (- 360 (angle-MS (time-seconds time))) s-hand)
+                  (* (get-x (angle-MS (time-seconds time)) 45) -1) (get-y (angle-MS (time-seconds time)) 45)
+  
+  (overlay/offset (rotate (- 360 (angle-MS (time-minutes time))) m-hand)
+                  (* (get-x (angle-MS (time-minutes time)) 45) -1) (get-y (angle-MS (time-minutes time)) 45)
+
+  (overlay/offset (rotate (- 360(angle-H (time-hours time))) h-hand)
+                  (* (get-x (angle-H (time-hours time)) 20)-1) (get-y (angle-H (time-hours time)) 20)
+                     (overlay (circle 5 "solid" "black")(circle 100 "outline" "black"))))))
+
+
+;; get-y: Number-> Number
+;; returns the y coordinate to shift the hands of the clock by
+(define (get-y angle magnitude)
+  (* magnitude (cos (degrees->radians angle))
+  ))
+
+(check-within (get-y 30 15) 12.990381021 #i1e-4)
+(check-within (get-y 40 15) 11.490666586 #i1e-4)
+(check-within (get-y 50 30) 19.283628111004 #i1e-4)
+
+;; get-x: Number-> Number
+;; returns the x coordinate to shift the hands of the clock by
+(define (get-x angle magnitude)
+  (* magnitude (sin (degrees->radians angle))
+  ))
+
+;;(check-within () )
+;;(check-within () )
+;;(check-within () )
+
+;; degrees->radians: Number->Number
+;; Converts a given degree to radians 
+(define (degrees->radians deg) (/ deg 57.295779))
+
+(check-expect(degrees->radians 57.295779) 1)
+(check-expect(degrees->radians 114.591558) 2)
+(check-expect(degrees->radians 171.887337) 3)
+
+
+;; angle-MS: Number -> Number
+;; Calculates the given minute or second to a degree rotation of a clock
+(define (angle-MS t) (modulo(* 6 t) 360))
+
+;;(check-expect())
+;;(check-expect())
+;;(check-expect())
+
+;; angle-H: Number -> Number
+;; Calculates the given hour to a degree rotation of a clock
+(define (angle-H t) (modulo (* 30 t) 720))
+
+;;(check-expect())
+;;(check-expect())
+;;(check-expect())
+|#
