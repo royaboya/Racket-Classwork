@@ -1,13 +1,15 @@
 #lang racket
 
 
-(define-struct Book [title author borrow-count borrower due])
+(define-struct Book [title author borrow-count borrower due stacks?])
 ;; A Book is a (make-Book String String Number String)
 ;; title is the title of the book
 ;; author is the author of the book
 ;; borrow-count is the number of times the book was borrowed (>= 0)
 ;; borrower is the person who currently has it checked out
 ;; due is true or false depending on if the book is past due
+;; stacks is if the book is on the stacks
+;; Interpretation: A library book
 
 (define BOOK1 (make-Book "The Giving Tree" "Shel Silverstein" 10 "Brian" #true))
 (define BOOK2 (make-Book "Title two" "Unknown" 5 "Ryan" #false))
@@ -58,4 +60,13 @@
 ;; returned (and waiting to be put back on the stacks)
 
 ;; too lazy atm to add stacks property 
-(define (describe-book book) ("no clue yet"))
+(define (describe-book book) 
+
+("no clue yet")
+
+
+)
+
+;; TAKEAWAY: TO SIMPLIFY AND REDUCE ARGUMENTS
+;; YOU CAN DEFINE A NEW DATA DEFINITION THAT COVERS
+;; THE STATES OF THE BOOK
